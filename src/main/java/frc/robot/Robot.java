@@ -4,7 +4,12 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.SpeedControllerGroup;
+import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.XboxController;
+import edu.wpi.first.wpilibj.GenericHID.Hand;
+import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -19,6 +24,10 @@ public class Robot extends TimedRobot {
   private static final String kCustomAuto = "My Auto";
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  
+  private XboxController controller;
+  private Talon talon1, talon2, talon3, talon4;
+  private DifferentialDrive wheels;
 
   /**
    * This function is run when the robot is first started up and should be used for any
@@ -29,6 +38,13 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
     m_chooser.addOption("My Auto", kCustomAuto);
     SmartDashboard.putData("Auto choices", m_chooser);
+
+    this.controller = new XboxController(0);
+    this.talon1 = new Talon(1);
+    this.talon2 = new Talon(2);
+    this.talon3 = new Talon(3);
+    this.talon4 = new Talon(4);
+    wheels = new DifferentialDrive(new SpeedControllerGroup(talon1, talon2), new SpeedControllerGroup(talon3, talon4));
   }
 
   /**
@@ -78,7 +94,9 @@ public class Robot extends TimedRobot {
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    wheels.tankDrive(controller.getY(Hand.kLeft), controller.getY(Hand.kRight));
+  }
 
   /** This function is called once when the robot is disabled. */
   @Override
